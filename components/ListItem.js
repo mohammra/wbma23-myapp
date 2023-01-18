@@ -6,19 +6,18 @@ const ListItem = ({singleMedia, navigation}) => {
   const item = singleMedia;
   return (
     <TouchableOpacity
-      style={StyleSheet.row}
+      style={styles.row}
       onPress={() => {
         navigation.navigate('Single', item);
       }}
     >
-      <View style={StyleSheet.box}>
+      <View style={styles.box}>
         <Image
-          style={{width: 100, height: 100}}
+          style={styles.image}
           source={{uri: uploadsUrl + item.thumbnails?.w160}}
-        ></Image>
+        />
       </View>
-
-      <View style={StyleSheet.box}>
+      <View style={styles.box}>
         <Text style={styles.listTitle}>{item.title}</Text>
         <Text>{item.description}</Text>
       </View>
