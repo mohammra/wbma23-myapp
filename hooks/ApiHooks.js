@@ -14,14 +14,17 @@ const useMedia = () => {
           return await fileResponse.json();
         })
       );
+
       setMediaArray(media);
     } catch (error) {
-      console.log('List, loadMedia', error);
+      console.error('List, loadMedia', error);
     }
   };
+
   useEffect(() => {
     loadMedia();
   }, []);
+
   return {mediaArray};
 };
 
