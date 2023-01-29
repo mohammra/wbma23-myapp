@@ -1,39 +1,34 @@
-import React, {useContext} from 'react';
-import {MainContext} from '../contexts/MainContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useAuthentication} from '../hooks/ApiHooks';
+import React from 'react';
+import {useUser} from '../hooks/ApiHooks';
 import {Button, Text, TextInput, View} from 'react-native';
 import {Controller, useForm} from 'react-hook-form';
 
-const LoginForm = () => {
-  const {setIsLoggedIn, setUser} = useContext(MainContext);
-  const {postLogin} = useAuthentication();
+const RegisterForm = () => {
+  // const {setIsLoggedIn} = useContext(MainContext);
+  // const {postLogin} = useAuthentication();
+  const {postUser} = useUser();
   const {
     control,
     handleSubmit,
     formState: {errors},
   } = useForm({
-    defaultValues: {username: '', password: ''},
+    defaultValues: {username: '', password: '', email: '', full_name: ''},
   });
 
-  const logIn = async (loginData) => {
-    console.log('Login button pressed', loginData);
-    // const data = {username: 'ilkkamtk', password: 'q1w2e3r4'};
+  const register = async (registerData) => {
+    console.log('Registering: ', registerData);
     try {
-      const loginResult = await postLogin(loginData);
-      console.log('logIn', loginResult);
-      await AsyncStorage.setItem('userToken', loginResult.token);
-      setUser(loginResult.user);
-      setIsLoggedIn(true);
+      const registerResult = await postUser(registerData);
+      console.log('registeration result', registerResult);
     } catch (error) {
-      console.error('logIn', error);
-      // TODO: notify user about failed login attempt
+      console.error('register', error);
+      // TODO: notify user about failed registeration attempt
     }
   };
 
   return (
     <View>
-      <Text>Login Form</Text>
+      <Text>Registeration Form</Text>
       <Controller
         control={control}
         rules={{required: true, minLength: 3}}
@@ -66,9 +61,40 @@ const LoginForm = () => {
         name="password"
       />
       {errors.password && <Text>Password (min. 5 chars) is required .</Text>}
-      <Button title="Sign in!" onPress={handleSubmit(logIn)} />
+      <Controller
+        control={control}
+        rules={{required: true}}
+        render={({field: {onChange, onBlur, value}}) => (
+          <TextInput
+            placeholder="Email"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="email"
+      />
+      {errors.email?.type === 'required' && <Text>is required</Text>}
+      <Controller
+        control={control}
+        rules={{minLength: 3}}
+        render={({field: {onChange, onBlur, value}}) => (
+          <TextInput
+            placeholder="Full name"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="full_name"
+      />
+      {errors.full_name?.type === 'minLength' && (
+        <Text>min length is 3 characters</Text>
+      )}
+
+      <Button title="Sign in!" onPress={handleSubmit(register)} />
     </View>
   );
 };
 
-export default LoginForm;
+export default RegisterForm;
