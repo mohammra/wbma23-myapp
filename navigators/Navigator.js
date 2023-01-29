@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Home from '../views/Home';
 import Profile from '../views/Profile';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Single from '../views/Single';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Login from '../views/Login';
+import {MainContext} from '../contexts/MainContext';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -13,7 +15,7 @@ const Stack = createNativeStackNavigator();
 const TabScreen = () => {
   return (
     <Tab.Navigator
-      screenOptions={(route) => {
+      screenOptions={({route}) => {
         return {
           tabBarIcon: ({focused, color, size}) => {
             let iconName;
@@ -23,7 +25,7 @@ const TabScreen = () => {
               iconName = 'person';
             }
 
-            return <Ionicons name={iconName} size={size} color={color} />;
+            return <Ionicons name={iconName} />;
           },
         };
       }}
@@ -35,17 +37,25 @@ const TabScreen = () => {
 };
 
 const StackScreen = () => {
+  const {isLoggedIn} = useContext(MainContext);
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="Tabs"
-        component={TabScreen}
-        options={{headerShown: false}}
-      ></Stack.Screen>
-      <Stack.Screen name="Single" component={Single}></Stack.Screen>
+      {isLoggedIn ? (
+        <>
+          <Stack.Screen
+            name="Tabs"
+            component={TabScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen name="Single" component={Single} />
+        </>
+      ) : (
+        <Stack.Screen name="Login" component={Login}></Stack.Screen>
+      )}
     </Stack.Navigator>
   );
 };
+
 const Navigator = () => {
   return (
     <NavigationContainer>
